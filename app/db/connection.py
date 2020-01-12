@@ -1,6 +1,8 @@
 import csv
 import json
 import os
+import pymongo
+
 from services.security import get_password_hash
 
 from pymongo import MongoClient
@@ -37,3 +39,6 @@ if str(config.DB_NAME) not in dbnames:
 
 def get_db_connection():
     return client[str(config.DB_NAME)]
+
+def get_mongo_asc():
+    return pymongo.ASCENDING
