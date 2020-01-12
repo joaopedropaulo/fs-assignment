@@ -15,8 +15,9 @@ services:
   app:
     image: fastapi-bp
     build:
-      context: .
+      context: ./src
       dockerfile: Dockerfile
+    # Live reload for dev
     command: /start-reload.sh
     restart: always
     environment:
@@ -30,24 +31,27 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - 8080:8080
+    # Mount for code changes
     volumes:
-      - ./app:/app
+      - ./src:/app
+    depends_on:
+      - mongo
 
   mongo:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
       MONGO_INITDB_DATABASE: ${DB_NAME}
-    volumes:
-      - ./data:/test-data
+    # No volumes defined because data is recreated on startup
 
+  # UI for easier access
   mongo-express:
     image: mongo-express
     restart: always
     ports:
       - 8081:8081
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${DB_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${DB_PASSWORD}

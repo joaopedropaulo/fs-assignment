@@ -3,10 +3,10 @@ import json
 import os
 import pymongo
 
-from services.security import get_password_hash
+from app.services.security import get_password_hash
 
 from pymongo import MongoClient
-from config import config
+from app.config import config
 
 db_username = str(config.DB_USERNAME)
 db_password = str(config.DB_PASSWORD)
@@ -14,6 +14,7 @@ db_uri = "mongodb://" + db_username + ":" + db_password + "@mongo:27017/"
 
 client = MongoClient(db_uri)
 
+# Imports 'users' and 'vehicles' data from file system CSVs to the MongoDB database
 dbnames = client.list_database_names()
 if str(config.DB_NAME) not in dbnames:
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
@@ -37,8 +38,10 @@ if str(config.DB_NAME) not in dbnames:
             print(vehicle)
             client[str(config.DB_NAME)].vehicles.insert_one(vehicle)
 
+# Returns a MongoDB connection
 def get_db_connection():
     return client[str(config.DB_NAME)]
 
+# Utility to retrieve the pymongo key for ascending sort
 def get_mongo_asc():
     return pymongo.ASCENDING
